@@ -5,8 +5,7 @@
 #include <QVBoxLayout>
 #include "iconManager.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     QMainWindow mainWindow;
@@ -18,16 +17,20 @@ int main(int argc, char *argv[])
     QWidget* centralWidget = new QWidget(&mainWindow);
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
 
+    // A label for showing the icon
     QLabel label(&mainWindow);
     label.setPixmap(iconManager.getIcon("eraser").pixmap(64, 64));
 
+    // Checkbox
     QCheckBox checkbox;
     checkbox.setText("Enable Eraser");
     checkbox.setChecked(true);
 
+    // Add widgets to layout
     mainLayout->addWidget(&label);
     mainLayout->addWidget(&checkbox);
 
+    // Signal for changing state of label via checkbox
     QObject::connect(&checkbox, &QCheckBox::stateChanged, [&label](int state) {
         if (state == Qt::Checked) {
             // Checkbox is checked, enable eraser function

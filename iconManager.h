@@ -4,9 +4,10 @@
 #include <QMap>
 #include <QString>
 #include <QIcon>
+#include <QPixmap>
+#include <QColor>
 
-class IconManager
-{
+class IconManager {
 public:
     IconManager();
     void loadIconsFromResource(const QString& resourcePath);
@@ -14,6 +15,7 @@ public:
 
 private:
     QMap<QString, QIcon> iconMap;
+    QPixmap recolorPixmap(const QPixmap &pixmap, const QColor &color);
 };
 
 #endif
