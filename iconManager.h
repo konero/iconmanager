@@ -4,18 +4,19 @@
 #include <QMap>
 #include <QString>
 #include <QIcon>
-#include <QPixmap>
-#include <QColor>
 
 class IconManager {
 public:
     IconManager();
+
     void loadIconsFromResource(const QString& resourcePath);
-    QIcon getIcon(const QString& filename);
+    QIcon getIcon(const QString& filename) const;
+    const QMap<QString, QIcon>& getIconMap() const;
+    const QMap<QString, QString>& getIconPaths() const;
 
 private:
     QMap<QString, QIcon> iconMap;
-    QPixmap recolorPixmap(const QPixmap &pixmap, const QColor &color);
+    QMap<QString, QString> iconPaths;
 };
 
-#endif
+#endif // ICONMANAGER_H
