@@ -1,45 +1,72 @@
 #include <QApplication>
 #include <QMainWindow>
-#include <QLabel>
-#include <QCheckBox>
 #include <QVBoxLayout>
+#include <QObject>
+#include <QSettings>
+#include <QCheckBox>
+#include <QToolButton>
+#include <QIcon>
+#include <QDebug>
 #include "iconManager.h"
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
+void printIconMap(const IconManager& iconManager) {
+    qDebug() << "Printing iconMap: ";
+    for (auto it = iconManager.getIconMap().constBegin();
+        it != iconManager.getIconMap().constEnd(); ++it) {
+        const QString& iconName = it.key();
+        const QString& iconPath = iconManager.getIconPaths().value(iconName);
+        qDebug() << "Icon Name: " << iconName;
+        qDebug() << "Icon Path: " << iconPath;
+    }
+}
 
-    QMainWindow mainWindow;
-    mainWindow.resize(400, 300);
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+    QMainWindow w;
 
+    // load icons into the map
     IconManager iconManager;
     iconManager.loadIconsFromResource(":/icons");
 
-    QWidget* centralWidget = new QWidget(&mainWindow);
-    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    // print contents of iconMap to console
+    printIconMap(iconManager);
 
-    QLabel label(&mainWindow);
-    label.setPixmap(iconManager.getIcon("eraser").pixmap(64, 64));
+    // create settings
+    QSettings settings("settings.ini", QSettings::IniFormat);
 
-    QCheckBox checkbox;
-    checkbox.setText("Enable Eraser");
-    checkbox.setChecked(true);
+    // central widget layout
+    QWidget *centralWidget = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    mainLayout->addWidget(&label);
-    mainLayout->addWidget(&checkbox);
+    // checkbox for toggling the theme
+    QCheckBox *checkBox = new QCheckBox("Toggle", centralWidget);
 
-    QObject::connect(&checkbox, &QCheckBox::stateChanged, [&label](int state) {
-        if (state == Qt::Checked) {
-            // Checkbox is checked, enable eraser function
-            label.setEnabled(true);
-        } else {
-            // Checkbox is unchecked, disable eraser function
-            label.setEnabled(false);
-        }
+    // load settings
+    checkBox->setChecked(settings.value("checkBoxStatus", false).toBool());
+
+    // connect stateChanged signal of checkBox to a lambda function that writes
+    // the status into settings
+    QObject::connect(checkBox, &QCheckBox::stateChanged,
+                    [checkBox, &settings](int state) {
+                    settings.setValue("checkBoxStatus",
+                    checkBox->isChecked());
     });
 
-    mainWindow.setCentralWidget(centralWidget);
-    mainWindow.show();
+    // create a toolButton containing an icon for testing
+    QToolButton toolButton;
+    QIcon testIcon = iconManager.getIcon("brush");
+    QPixmap testPm = iconManager.recolorPixmap(testIcon.pixmap(QSize(32, 32), QIcon::Normal), QColor(Qt::red));
+    QIcon testRecolorIcon;
+    testRecolorIcon.addPixmap(testPm, QIcon::Normal);
+    toolButton.setIcon(testRecolorIcon);
+    toolButton.setIconSize(testRecolorIcon.actualSize(QSize(32, 32)));
 
-    return app.exec();
+    // build the layout
+    layout->addWidget(checkBox);
+    layout->addWidget(&toolButton);
+
+    // build the window
+    w.setCentralWidget(centralWidget);
+    w.show();
+    return a.exec();
 }
