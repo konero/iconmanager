@@ -13,6 +13,7 @@ public:
     QIcon getIcon(const QString& filename) const;
     const QMap<QString, QIcon>& getIconMap() const;
     const QMap<QString, QString>& getIconPaths() const;
+    QPixmap recolorPixmap(const QPixmap &pixmap, const QColor &color);
 
 private:
     QMap<QString, QIcon> iconMap;

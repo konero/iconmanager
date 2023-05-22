@@ -6,6 +6,7 @@ IconManager::IconManager() {
     // Initialize iconMap or perform any other necessary initialization
 }
 
+
 void IconManager::loadIconsFromResource(const QString& resourcePath) {
     QDirIterator it(resourcePath, QStringList() << "*.svg", QDir::Files, QDirIterator::Subdirectories);
 
@@ -28,4 +29,23 @@ const QMap<QString, QIcon>& IconManager::getIconMap() const {
 
 const QMap<QString, QString>& IconManager::getIconPaths() const {
     return iconPaths;
+}
+
+QPixmap IconManager::recolorPixmap(const QPixmap &pixmap, const QColor &color) {
+  // Recolor black pixels
+  QImage img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
+  QRgb targetColor = color.rgb();
+  int height = img.height();
+  int width = img.width();
+
+  for (int y = 0; y < height; ++y) {
+    QRgb *pixel = reinterpret_cast<QRgb *>(img.scanLine(y));
+    QRgb *end = pixel + width;
+    for (; pixel != end; ++pixel) {
+      if (qGray(*pixel) == 0) {
+        *pixel = (targetColor & 0x00FFFFFF) | (qAlpha(*pixel) << 24);
+      }
+    }
+  }
+  return QPixmap::fromImage(img);
 }
