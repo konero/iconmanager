@@ -7,17 +7,17 @@
 
 class IconManager {
 public:
-    IconManager();
+  IconManager();
 
-    void loadIconsFromResource(const QString& resourcePath);
-    QIcon getIcon(const QString& filename) const;
-    const QMap<QString, QIcon>& getIconMap() const;
-    const QMap<QString, QString>& getIconPaths() const;
-    QPixmap recolorPixmap(const QPixmap &pixmap, const QColor &color);
+  void loadIconsFromResource(const QString& resourcePath);
+  QIcon getIcon(const QString& filename) const;
+  const QMap<QString, QIcon>& getIconMap() const;
+  const QMap<QString, QString>& getIconPaths() const;
+  QPixmap recolorPixmap(const QPixmap& pixmap, const QColor& color);
 
 private:
-    QMap<QString, QIcon> iconMap;
-    QMap<QString, QString> iconPaths;
+  QMap<QString, QIcon> iconMap;
+  QMap<QString, QString> iconPaths;
 };
 
-#endif // ICONMANAGER_H
+#endif  // ICONMANAGER_H
