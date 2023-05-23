@@ -1,11 +1,7 @@
 #include "iconManager.h"
 #include <QDirIterator>
 
-IconManager::IconManager() {
-    // Constructor implementation
-    // Initialize iconMap or perform any other necessary initialization
-}
-
+IconManager::IconManager() {}
 
 void IconManager::loadIconsFromResource(const QString& resourcePath) {
     QDirIterator it(resourcePath, QStringList() << "*.svg" << "*.png", QDir::Files, QDirIterator::Subdirectories);
@@ -19,12 +15,12 @@ void IconManager::loadIconsFromResource(const QString& resourcePath) {
     }
 }
 
-QIcon IconManager::getIcon(const QString& filename) const {
-    return iconMap.value(filename);
-}
-
 const QMap<QString, QIcon>& IconManager::getIconMap() const {
     return iconMap;
+}
+
+QIcon IconManager::getIcon(const QString& filename) const {
+    return iconMap.value(filename);
 }
 
 const QMap<QString, QString>& IconManager::getIconPaths() const {
