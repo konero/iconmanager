@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "qfileinfo": "cpp",
-        "qapplication": "cpp"
+        "qapplication": "cpp",
+        "editor.formatOnSave": "true",
+        "clang-format.executable": "C:/Program Files/LLVM/bin/clang-format.exe"
     }
 }
