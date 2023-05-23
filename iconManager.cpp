@@ -1,7 +1,9 @@
 #include "iconManager.h"
 #include <QDirIterator>
 
-IconManager::IconManager() {}
+IconManager::IconManager() {
+  currentIconMap = &iconMapDark;  // default theme
+}
 
 void IconManager::loadIconsFromResource(const QString &resourcePath) {
   QDirIterator it(resourcePath,
@@ -11,17 +13,29 @@ void IconManager::loadIconsFromResource(const QString &resourcePath) {
 
   while (it.hasNext()) {
     it.next();
-    QIcon icon(it.filePath());
     QString iconName = it.fileInfo().baseName();
-    iconMap.insert(iconName, icon);
     iconPaths.insert(iconName, it.filePath());
+
+    QPixmap pixmap(it.filePath());
+
+    QIcon iconLight(recolorPixmap(pixmap, QColor(Qt::blue)));
+    QIcon iconDark(recolorPixmap(pixmap, QColor(Qt::red)));
+
+    iconMapLight.insert(iconName, iconLight);
+    iconMapDark.insert(iconName, iconDark);
   }
 }
 
-const QMap<QString, QIcon> &IconManager::getIconMap() const { return iconMap; }
-
 QIcon IconManager::getIcon(const QString &filename) const {
-  return iconMap.value(filename);
+  return currentIconMap->value(filename);
+}
+
+const QMap<QString, QIcon> &IconManager::getIconMap() const {
+  return *currentIconMap;
+}
+
+void IconManager::switchTheme(bool isDarkTheme) {
+  currentIconMap = isDarkTheme ? &iconMapDark : &iconMapLight;
 }
 
 const QMap<QString, QString> &IconManager::getIconPaths() const {
@@ -29,7 +43,7 @@ const QMap<QString, QString> &IconManager::getIconPaths() const {
 }
 
 QPixmap IconManager::recolorPixmap(const QPixmap &pixmap, const QColor &color) {
-  // Recolor black pixels
+  // repaints black pixels
   QImage img       = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
   QRgb targetColor = color.rgb();
   int height       = img.height();
