@@ -8,7 +8,7 @@ IconManager::IconManager() {
 
 
 void IconManager::loadIconsFromResource(const QString& resourcePath) {
-    QDirIterator it(resourcePath, QStringList() << "*.svg", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator it(resourcePath, QStringList() << "*.svg" << "*.png", QDir::Files, QDirIterator::Subdirectories);
 
     while (it.hasNext()) {
         it.next();
