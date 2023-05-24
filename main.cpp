@@ -24,15 +24,17 @@ int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
   QMainWindow w;
 
-  // load icons into the map
-  IconManager iconManager;
-  iconManager.loadIconsFromResource(":/icons");
-
-  // print contents of iconMap to console
-  printIconMap(iconManager);
-
   // create settings
   QSettings settings("settings.ini", QSettings::IniFormat);
+  bool isDarkTheme = settings.value("checkBoxStatus", false).toBool();
+
+  // load icons into the map
+  IconManager iconManager;
+  iconManager.switchTheme(isDarkTheme);  // switch theme based on settings
+  iconManager.loadIconsFromResource(":/icons");
+
+  // print contents of iconMap to console for debug
+  printIconMap(iconManager);
 
   // central widget layout
   QWidget *centralWidget = new QWidget;
@@ -40,26 +42,17 @@ int main(int argc, char *argv[]) {
 
   // checkbox for toggling the theme
   QCheckBox *checkBox = new QCheckBox("Toggle", centralWidget);
+  checkBox->setChecked(isDarkTheme);  // load settings
 
-  // load settings
-  checkBox->setChecked(settings.value("checkBoxStatus", false).toBool());
-
-  // connect stateChanged signal of checkBox to a lambda function that writes
-  // the status into settings
   QObject::connect(checkBox, &QCheckBox::stateChanged,
-                   [checkBox, &settings](int state) {
+                   [&iconManager, checkBox, &settings](int state) {
+                     iconManager.switchTheme(state == Qt::Checked);
                      settings.setValue("checkBoxStatus", checkBox->isChecked());
                    });
 
   // create a toolButton containing an icon for testing
   QToolButton toolButton;
-  QIcon testIcon = iconManager.getIcon("brush");
-  QPixmap testPm = iconManager.recolorPixmap(
-      testIcon.pixmap(QSize(32, 32), QIcon::Normal), QColor(Qt::red));
-  QIcon testRecolorIcon;
-  testRecolorIcon.addPixmap(testPm, QIcon::Normal);
-  toolButton.setIcon(testRecolorIcon);
-  toolButton.setIconSize(testRecolorIcon.actualSize(QSize(32, 32)));
+  toolButton.setIcon(iconManager.getIcon("brush"));
 
   // build the layout
   layout->addWidget(checkBox);
