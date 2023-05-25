@@ -1,5 +1,7 @@
 # Qt Icon Theme Manager
 
+<img src="https://github.com/konero/iconmanager/blob/master/img/iconManagerApp.gif">
+
 Handled by `IconManager` class, which manages icon themes, a light theme and dark theme. The class reads icons from a specified path and generates two versions of each icon (light and dark) by `recoloring` the original images. It stores these icon versions in two separate `QMaps` (`iconMapLight` and `iconMapDark`), mapping icon names to `QIcon` objects.
 
 The `currentIconMap` pointer points to the currently active icon map. This enables us to retrieve the right version of the icon based on the current theme by calling `IconManager::getIcon()`.
