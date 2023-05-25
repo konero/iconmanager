@@ -50,13 +50,11 @@ int main(int argc, char *argv[]) {
                      settings.setValue("checkBoxStatus", checkBox->isChecked());
                    });
 
-  // create a toolButton containing an icon for testing
-  QToolButton toolButton;
-  toolButton.setIcon(iconManager.getIcon("brush"));
+  TToolButton *toolButton = new TToolButton(&iconManager, "brush");
 
   // build the layout
   layout->addWidget(checkBox);
-  layout->addWidget(&toolButton);
+  layout->addWidget(toolButton);
 
   // build the window
   w.setCentralWidget(centralWidget);
