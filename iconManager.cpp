@@ -36,6 +36,7 @@ const QMap<QString, QIcon> &IconManager::getIconMap() const {
 
 void IconManager::switchTheme(bool isDarkTheme) {
   currentIconMap = isDarkTheme ? &iconMapDark : &iconMapLight;
+  emit themeChanged();
 }
 
 const QMap<QString, QString> &IconManager::getIconPaths() const {
