@@ -86,8 +86,15 @@ void IconMap::loadIconsFromResource(const QString &resourcePath) {
     QString baseFilePath = dirPath + "/" + fileName;
 
     iconPaths.insert(baseName, it.filePath());
-    QImage baseImage(Utils::svgToImageWithColorChange(baseFilePath));
-    
+
+    QList<QPair<QColor, QColor>> colorReplacements{
+        {QColor(1,1,1), QColor(Qt::red)},
+        {QColor(Qt::blue), QColor(Qt::green)}};
+
+    QImage baseImage(Utils::svgToImageWithColorChange(
+        baseFilePath, QSize(), Qt::IgnoreAspectRatio, Qt::transparent,
+        colorReplacements));
+
     processIcon(baseName, baseImage);
   }
 }
