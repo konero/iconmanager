@@ -33,7 +33,7 @@ IconMap::IconMap() {
   iconThemeColor = Qt::black;
 
   // Set icon brightness levels
-  normalOpacity   = 0.8;
+  normalOpacity = 0.8;
 }
 
 //------------------------------------------------------------------------------
@@ -59,8 +59,7 @@ qreal IconMap::getNormalOpacity() const { return normalOpacity; }
 
 //------------------------------------------------------------------------------
 
-void IconMap::processIcon(const QString &dirPath, const QString &baseName,
-                          QImage &baseImage) {
+void IconMap::processIcon(const QString &baseName, QImage &baseImage) {
   if (baseImage.isNull()) return;
 
   QIcon icon;
@@ -84,15 +83,12 @@ void IconMap::loadIconsFromResource(const QString &resourcePath) {
     QString baseName   = fileInfo.baseName();         // image
     QString dirPath    = it.fileInfo().dir().path();  // :/path/to
 
-    QString baseFilePath = dirPath + fileName;
+    QString baseFilePath = dirPath + "/" + fileName;
 
     iconPaths.insert(baseName, it.filePath());
-
-    // Load base icon image
-    QImage baseImage = Utils::svgToImageWithColorChange(baseFilePath);
-
-    // Build icon
-    processIcon(dirPath, baseName, baseImage);
+    QImage baseImage(Utils::svgToImageWithColorChange(baseFilePath));
+    
+    processIcon(baseName, baseImage);
   }
 }
 
@@ -243,7 +239,8 @@ QImage Utils::svgToImageWithColorChange(
 
 //------------------------------------------------------------------------------
 
-bool isColorEqual(const QString &colorString, const QColor &colorObject) {
+bool Utils::isColorEqual(const QString &colorString,
+                         const QColor &colorObject) {
   QColor colorFromSvg;
 
   if (colorString.startsWith("#")) {
@@ -270,8 +267,9 @@ bool isColorEqual(const QString &colorString, const QColor &colorObject) {
 
 //------------------------------------------------------------------------------
 
-void modifySvgElement(QDomElement element,
-                      const QList<QPair<QColor, QColor>> &colorReplacements) {
+void Utils::modifySvgElement(
+    QDomElement element,
+    const QList<QPair<QColor, QColor>> &colorReplacements) {
   // Check for inline fill and stroke color
   if (element.hasAttribute("style")) {
     QString styleString         = element.attribute("style");
@@ -346,4 +344,35 @@ QString Utils::loadAndModifySvg(
   doc.save(stream, 4);  // Indentation width of 4
 
   return modifiedSvg;
+}
+
+//------------------------------------------------------------------------------
+
+QImage Utils::svgToImage(const QString &svgFilePath, const QSize &size,
+                         Qt::AspectRatioMode aspectRatioMode, QColor bgColor) {
+  QSvgRenderer svgRenderer(svgFilePath);
+
+  // Check if SVG file was loaded correctly
+  if (!svgRenderer.isValid()) {
+    qWarning() << "Invalid SVG file:" << svgFilePath;
+    return QImage();
+  }
+
+  static int devPixRatio = getHighestDevicePixelRatio();
+
+  QSize imageSize = svgRenderer.defaultSize() * devPixRatio;
+  SvgRenderParams params =
+      calculateSvgRenderParams(size, imageSize, aspectRatioMode);
+  QImage image(params.size, QImage::Format_ARGB32_Premultiplied);
+  QPainter painter;
+  image.fill(bgColor);
+
+  if (!painter.begin(&image)) {
+    qWarning() << "Failed to begin QPainter on image";
+    return QImage();
+  }
+
+  svgRenderer.render(&painter, params.rect);
+  painter.end();
+  return image;
 }

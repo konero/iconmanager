@@ -11,6 +11,7 @@
 #include <QHBoxLayout>
 #include <QMap>
 #include <QIcon>
+#include <QtXml>
 
 //------------------------------------------------------------------------------
 // Icon Manager
@@ -23,8 +24,7 @@ public:
   static IconMap &getInstance();
 
   void loadIconsFromResource(const QString &resourcePath);
-  void processIcon(const QString &dirPath, const QString &baseName,
-                   QImage &baseImage);
+  void processIcon(const QString &baseName, QImage &baseImage);
 
   // Debug
   void printIconMap() const;
@@ -146,12 +146,24 @@ public:
   static QImage svgToImageWithColorChange(
       const QString &svgFilePath, const QSize &size = QSize(),
       Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio,
-      QColor bgColor                      = QColor(),
+      QColor bgColor                      = QColor(Qt::transparent),
       QList<QPair<QColor, QColor>> colorReplacements =
           QList<QPair<QColor, QColor>>());
 
   static QString loadAndModifySvg(
       const QString &svgFilePath,
+      const QList<QPair<QColor, QColor>> &colorReplacements);
+
+  static QImage svgToImage(
+      const QString &svgFilePath, const QSize &size = QSize(),
+      Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio,
+      QColor bgColor                      = QColor(Qt::transparent));
+
+  static bool isColorEqual(const QString &colorString,
+                           const QColor &colorObject);
+
+  static void modifySvgElement(
+      QDomElement element,
       const QList<QPair<QColor, QColor>> &colorReplacements);
 };
 
