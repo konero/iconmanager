@@ -1,8 +1,12 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource>
+    <qresource prefix="/">
         <file>icons/brush.svg</file>
         <file>icons/eraser.svg</file>
         <file>icons/animate.svg</file>
+        <file>icons/logo_test_flatten.svg</file>
+        <file>icons/logo_stroke_layer.svg</file>
+        <file>icons/logo_blue.svg</file>
+        <file>icons/logo_trans.svg</file>
     </qresource>
 </RCC>
