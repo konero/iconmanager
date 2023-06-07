@@ -8,7 +8,7 @@
 #include <QtXml>
 #include <QIcon>
 #include <QMap>
-#include <QResource>
+#include <QSettings>
 #include "iconManager.h"
 
 //==============================================================================
@@ -30,11 +30,23 @@ int getHighestDevicePixelRatio() {
 //==============================================================================
 
 IconMap::IconMap() {
-  iconThemeColor = Qt::black;
+  QSettings settings("config.ini", QSettings::IniFormat);
+
+  if (settings.contains("iconThemeColor")) {
+    QString colorString = settings.value("iconThemeColor").toString();
+    QColor color(colorString);
+    if (color.isValid()) {
+      iconThemeColor = color;
+    } else {
+      iconThemeColor = Qt::black;
+    }
+  }
 
   // Set icon brightness levels
   normalOpacity = 0.8;
 }
+
+void IconMap::setIconThemeColor(QColor color) { iconThemeColor = color; }
 
 //------------------------------------------------------------------------------
 
@@ -88,7 +100,7 @@ void IconMap::loadIconsFromResource(const QString &resourcePath) {
     iconPaths.insert(baseName, it.filePath());
 
     QList<QPair<QColor, QColor>> colorReplacements{
-        {QColor(1,1,1), QColor(Qt::red)},
+        {QColor(1, 1, 1), QColor(iconThemeColor)},
         {QColor(Qt::blue), QColor(Qt::green)}};
 
     QImage baseImage(Utils::svgToImageWithColorChange(
@@ -100,7 +112,8 @@ void IconMap::loadIconsFromResource(const QString &resourcePath) {
 }
 
 //==============================================================================
-// Icon Manager : Debug Tools ==================================================
+// Icon Manager : Debug Tools
+// ==================================================
 //==============================================================================
 
 const QMap<QString, QIcon> &IconMap::getIconMap() const {
@@ -131,7 +144,8 @@ void IconMap::printIconMap() const {
 }
 
 //==============================================================================
-// Image Manipulation ==========================================================
+// Image Manipulation
+// ==========================================================
 //==============================================================================
 
 GraphicUtils::GraphicUtils() {}
@@ -171,7 +185,8 @@ QPixmap GraphicUtils::adjustOpacity(const QPixmap &input, qreal opacity) {
 }
 
 //==============================================================================
-// SvgUtils ====================================================================
+// SvgUtils
+// ====================================================================
 //==============================================================================
 
 Utils::Utils() {}
